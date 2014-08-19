@@ -3,6 +3,7 @@ User usr;
 
 String strErrMsg;
 String strTest;
+String strTest2;
 
 public PageReference save() {
 
