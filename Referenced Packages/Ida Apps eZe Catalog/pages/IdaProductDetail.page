@@ -1,0 +1,236 @@
+<apex:page controller="eCatalog.IdaProductDetailController" showHeader="false" cache="false"> 
+    <apex:includeScript value="{!URLFOR($Resource.eCatalog__IDA_jQuery, 'jQuery/jquery-1.5.2.min.js')}" />     
+    <apex:includeScript value="{!URLFOR($Resource.eCatalog__build_HTML,'theme/scripts/ddaccordion.js')}"/>    
+    <apex:includeScript value="{!URLFOR($Resource.eCatalog__IDA_jQuery, 'jQuery/colorbox/jquery.colorbox-min.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.eCatalog__IDA_jQuery, 'jQuery/colorbox/colorbox.css')}"/>                 
+    <script type="text/javascript">
+        ddaccordion.init({
+        headerclass: "expandable", //Shared CSS class name of headers group that are expandable
+        contentclass: "categoryitems", //Shared CSS class name of contents group
+        revealtype: "click", //Reveal content when user clicks or onmouseover the header? Valid value: "click", "clickgo", or "mouseover"
+        mouseoverdelay: 200, //if revealtype="mouseover", set delay in milliseconds before header expands onMouseover
+        collapseprev: true, //Collapse previous content (so only one open at any time)? true/false 
+        defaultexpanded: [0], //index of content(s) open by default [index1, index2, etc]. [] denotes no content
+        onemustopen: false, //Specify whether at least one header should be open always (so never all headers closed)
+        animatedefault: false, //Should contents open by default be animated into view?
+        persiststate: true, //persist state of opened contents within browser session?
+        toggleclass: ["", "openheader"], //Two CSS classes to be applied to the header when it's collapsed and expanded, respectively ["class1", "class2"]
+        togglehtml: ["prefix", "", ""], //Additional HTML added to the header when it's collapsed and expanded, respectively  ["position", "html1", "html2"] (see docs)
+        animatespeed: "fast", //speed of animation: integer in milliseconds (ie: 200), or keywords "fast", "normal", or "slow"
+        oninit:function(headers, expandedindices){ //custom code to run when headers have initalized
+        //do nothing
+        },
+        onopenclose:function(header, index, state, isuseractivated){ //custom code to run whenever a header is opened or closed
+        //do nothing
+        }
+        })
+        
+        var selectedIndex = -1;
+        function formatCurrency(num)
+        {
+            num = num.toString().replace(/\$|\,/g, '');
+            if(isNaN(num))
+            {
+                num = "0";   
+            }
+            sign = (num == (num = Math.abs(num)));
+            num = Math.floor(num * 100 + 0.50000000001);
+            cents = num % 100;
+            num = Math.floor(num / 100).toString();
+            if(cents < 10)
+            {
+                cents = "0" + cents;
+            }
+            for(var i = 0; i < Math.floor((num.length-(1+i))/3); i++)
+            {
+                num = num.substring(0, num.length-(4*i+3))+','+num.substring(num.length-(4*i+3));
+            }
+            return (((sign) ? '' : '-') + num + '.' + cents);
+        }
+        function addItem()
+        {           
+            $(":hidden[id$='selectedIndex']").val(selectedIndex);
+        }
+        function getUpgradePrice()
+        {
+            if(selectedIndex == '-1')
+            {
+                upgradePrice = $("#imageThumbmail").next().text();
+            }
+            else
+            {
+                upgradePrice = $(".upgradeImage").eq(selectedIndex).next().text();
+            }
+            return upgradePrice;
+        }   
+        function calculateTotalPrice()
+        {
+            var unitPrice = Number({!product.UnitPrice});  
+            var upgradePrice = getUpgradePrice();                      
+            if(isNaN(upgradePrice))
+            {
+                upgradePrice = 0;
+            }
+            else
+            {
+                upgradePrice = Number(upgradePrice);
+            }                        
+            var quantity = $(":text[id$='quantity']").val(); 
+            if(isNaN(quantity))
+            {
+                quantity = 0;
+            }                
+            else
+            {
+                quantity = Number(quantity);
+            }    
+            var totalPrice = (unitPrice + upgradePrice) * quantity;      
+            totalPrice = formatCurrency(totalPrice);                         
+            $("#totalPrice").text(totalPrice);
+        }          
+        $(document).ready(function(){              
+            // hide date format
+            $(".dateFormat").css("display", "none");   
+            
+            // toggle tab catalog   
+            $(".tablinks a").click(function(){
+                $(this).addClass("active").siblings().removeClass();
+                var index = $(".tablinks a").index(this);                
+                $(".tabContent").eq(index).show().siblings().hide();
+                return false;
+            });
+            
+            $("#imageThumbmail").click(function(){
+                selectedIndex = -1;
+                calculateTotalPrice();
+            });
+            $(".upgradeImage").click(function(){
+                selectedIndex = $(".upgradeImage").index(this);
+                calculateTotalPrice();
+            });       
+            $(":text[id$='quantity']").blur(function(){        
+                var quantity = Number($(this).val());                
+                if(isNaN(quantity) || quantity == 0)
+                {
+                    $(this).val(1);
+                }
+                calculateTotalPrice();                 
+            });                       
+            calculateTotalPrice();                       
+            $("a[rel='colorbox']").colorbox({photo:true});            
+        });
+    </script>                                      
+    <apex:composition template="eCatalog__IdaSiteTemplate">        
+        <apex:define name="body">
+            <div class="contentBox">
+                <div class="leftPanel"><c:IdaVerticalMenu /></div>    
+                <div class="mainPanel">
+                    <h1 class="cTitle">Product View</h1>
+                    <div class="clearfloat"></div>
+                    <apex:outputPanel style="margin-top: 20px; text-align: center; color: red;" layout="block" rendered="{!ISNULL(product)}">
+                        No product found!
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="block" styleClass="productView" rendered="{!NOT(ISNULL(product))}">
+                        <div class="leftPanel">
+                            <div class="enlargeMassage">
+                                <a rel="colorbox" href="{!product.ImageFullSize}" title="{!product.Name}">Click to Enlarge</a>
+                            </div>
+                            <div style="margin-bottom: 10px;">                                
+                                <img id="imageThumbmail" style="cursor: pointer" src="{!product.ImageThumbnail}" width="279" height="247" alt="{!product.Name}" title="{!product.Name}" />                                
+                                <span style="display: none">0</span>                                
+                            </div>                            
+                            <apex:repeat value="{!product.upgradeCatalogs}" var="item">
+                                <span>
+                                    <img class="upgradeImage" src="{!item.Image}" width="83" height="83" alt="" style="margin-right: 5px; cursor: pointer;" />
+                                    <span style="display: none">{!item.UpgradePrice}</span>
+                                </span>                                
+                            </apex:repeat>
+                        </div>                            
+                        <div class="rightPanel">
+                            <h3>{!product.Name}</h3>
+                            <div class="tabBox">
+                                <div class="tablinks">
+                                    <apex:variable value="{!0}" var="i"/> 
+                                    <apex:repeat value="{!product.tabCatalogs}" var="item">
+                                        <a href="#"  title="{!item.Title}" class="{!IF(i=0, 'active', '')}">{!item.Title}</a>
+                                        <apex:variable value="{!i+1}" var="i"/>
+                                    </apex:repeat>
+                                </div>
+                                <div style="overflow: auto; height: 205px;">
+                                    <apex:variable value="{!0}" var="i"/>
+                                    <apex:repeat value="{!product.tabCatalogs}" var="item">
+                                        <div class="tabContent" style="display: {!IF(i=0, 'block', 'none')}">                                        
+                                            <apex:outputText value="{!item.RichText}" escape="false" rendered="{!item.RichText != ''}" />
+                                            <apex:outputText value="{!item.LongText}" escape="false" rendered="{!item.RichText == ''}"/>
+                                        </div>
+                                        <apex:variable value="{!i+1}" var="i"/>
+                                    </apex:repeat>
+                                </div>                                
+                                    
+                                <div class="tabContent">   
+                                    <apex:form >
+                                        <apex:inputHidden value="{!selectedIndex}" id="selectedIndex"/>
+                                        <table border="0" cellpadding="2" cellspacing="0" width="100%">
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Quantity</th>
+                                                <th style="width: 60px;">Total Price</th>
+                                            </tr>
+                                            <tr>
+                                                <td class="darkblue">{!product.Name}</td>
+                                                <td><apex:inputText value="{!quantity}" size="3" id="quantity" maxlength="3"/></td>
+                                                <td class="t14 darkblue">
+                                                    <strong>{!product.CurrencyCode}<span id="totalPrice"></span></strong>
+                                                </td>
+                                            </tr>                                                                                                                                                                                                                     
+                                        </table>
+                                        <apex:outputPanel id="inventoryMix">
+                                            <table border="0" cellpadding="2" cellspacing="0" width="100%">
+                                                <tr>
+                                                    <td style="text-align: right;">    
+                                                        <apex:selectList value="{!product.Mix.Value1}" size="1" rendered="{!NOT(ISNULL(picklist1Options))}">
+                                                            <apex:selectOptions value="{!picklist1Options}"></apex:selectOptions>
+                                                            <apex:actionSupport event="onchange" status="firstStatus" reRender="inventoryMix" />
+                                                        </apex:selectList> 
+                                                    </td>
+                                                    <td style="width: 60px;"><apex:actionStatus id="firstStatus" startText="waiting..." startStyle="color: red;" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align: right;">    
+                                                        <apex:selectList value="{!product.Mix.Value2}" size="1" rendered="{!NOT(ISNULL(picklist2Options))}">
+                                                            <apex:selectOptions value="{!picklist2Options}"></apex:selectOptions>
+                                                            <apex:actionSupport event="onchange" status="secondStatus" reRender="inventoryMix" />
+                                                        </apex:selectList>
+                                                    </td>
+                                                    <td style="width: 60px;"><apex:actionStatus id="secondStatus" startText="waiting..." startStyle="color: red;" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align: right;">    
+                                                        <apex:selectList value="{!product.Mix.Value3}" size="1" rendered="{!NOT(ISNULL(picklist3Options))}">
+                                                            <apex:selectOptions value="{!picklist3Options}"></apex:selectOptions>
+                                                        </apex:selectList> 
+                                                    </td>
+                                                    <td style="width: 60px;"></td>
+                                                </tr>                                                                                            
+                                            </table>                                                                                                                                    
+                                        </apex:outputPanel>                                        
+                                        <apex:messages style="color: red" />   
+                                        <div align="center" style="font-size: 18px; padding-bottom: 10px;">
+                                            <br/><apex:commandLink value="Add to Cart" onclick="addItem()" action="{!addToCart}" />
+                                        </div>
+                                        <!--<div align="right" style="font-size: 14px;">
+                                            <strong><script type="text/javascript" src="{!URLFOR($Resource.build_HTML,'theme/scripts/sharethis.js')}"></script></strong>
+                                        </div>-->
+                                    </apex:form>                                                                       
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clearfloat"></div>
+                    </apex:outputPanel>                    
+                </div>
+                <div class="clearfloat"></div>
+            </div>
+            <div class="footerBar"><apex:image value="{!URLFOR($Resource.eCatalog__build_HTML,'theme/images/footer_bar.gif')}" width="960" height="30" alt=""/></div>                                                 
+        </apex:define>
+    </apex:composition>    
+</apex:page>

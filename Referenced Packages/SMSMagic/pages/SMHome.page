@@ -1,0 +1,78 @@
+<apex:page controller="screenmagic.SMHomeController" tabStyle="SM_Home__tab">
+<apex:includeScript value="/soap/ajax/15.0/connection.js"/>
+<apex:includeScript value="/soap/ajax/15.0/apex.js"/>
+<apex:includeScript value="{!$Resource.screenmagic__BulkSMSJS}"/>
+<apex:sectionHeader title="SMS Magic - {!$User.FirstName} {!$User.LastName}" subtitle="Dashboard"/>
+
+<apex:form >
+<apex:pageBlock title="SMS Magic">
+<apex:pageBlockButtons location="top" rendered="{!isRegistered}">
+<apex:commandButton value="New SMS" rendered="{!isRegistered}" onclick="redirectTo('/apex/NewSMS','/apex/screenmagic__SMHome');return false;" />
+<apex:commandButton value="New SMS Template"  rendered="{!isRegistered}" onclick="redirectTo('/apex/NewSMSTemplate','/apex/screenmagic__SMHome');return false;"/>
+<apex:commandButton value="View SMS History" rendered="{!isRegistered}" onclick="redirectTo('/apex/SMSHistory','');return false;" />
+<apex:commandButton value="View Templates" rendered="{!isRegistered}" onclick="redirectTo('/apex/SMSTemplates','');return false;"/>
+</apex:pageBlockButtons>
+<apex:pageBlockButtons location="bottom" rendered="{!isNotRegistered}">
+<apex:commandButton value="register"  rendered="{!isNotRegistered}"  action="{!register}"/>
+</apex:pageBlockButtons>
+<apex:pageBlockSection title="SMS Magic Registration"  rendered="{!isNotRegistered}" columns="1">
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="Company Name" for="companyName"/>
+<apex:inputText value="{!companyName}" id="companyName" disabled="true"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="Contact Name" for="contactName"/>
+<apex:inputText value="{!contactName}" id="contactName" disabled="true"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="Address" for="address"/>
+<apex:inputTextArea value="{!address}" id="address"  />
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="Email Id" for="emailId"/>
+<apex:inputText value="{!emailId}" id="emailId" disabled="true"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="Phone Number" for="phoneNumber"/>
+<apex:inputText value="{!phoneNumber}" required="true" id="phoneNumber"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="Sender Id" for="senderId"/>
+<apex:inputText value="{!senderId}"  required="true" id="senderId"/ > 
+</apex:pageBlockSectionItem>
+
+</apex:pageBlockSection>
+<apex:pageBlockSection title="SMS Magic Information" columns="2" rendered="{!isRegistered}">
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="SenderId" for="theSenderId"/>
+<apex:outputText value="{!senderId}" id="theSenderId"  />
+</apex:pageBlockSectionItem><br>
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="SenderId Status" for="theSenderIdStatus"/>
+<apex:outputText value="{!senderIdStatus}" id="theSenderIdStatus"  />
+</apex:pageBlockSectionItem><br>
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="Credits Available" for="availableCredits"/>
+<apex:outputText value="{!availableCredits}"  id="availableCredits"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+
+</apex:pageBlockSectionItem>
+</apex:pageBlockSection>
+<apex:pageBlockSection title="Recent SMS" columns="1"  rendered="{!isRegistered}">
+
+  <apex:pageBlockTable value="{!recentSMS}" var="sms" >
+            <apex:column value="{!sms.screenmagic__Name__c}" headerValue="Name"/>        
+            <apex:column value="{!sms.screenmagic__PhoneNumber__c}" headerValue="Mobile"/>
+            <apex:column value="{!sms.screenmagic__SMSText__c}" headerValue="Text"/>
+            <apex:column value="{!sms.CreatedDate}" headerValue="CreatedOn"/>
+            
+        </apex:pageBlockTable>
+                
+</apex:pageBlockSection>
+
+
+</apex:pageBlock>
+</apex:form>
+</apex:page>

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <webLinks>
+        <fullName>Find_Account</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Find Account</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>{!REQUIRESCRIPT(&quot;/soap/ajax/22.0/connection.js&quot;)}
+{!REQUIRESCRIPT(&quot;/soap/ajax/22.0/apex.js&quot;)}
+
+var clickedButtons = new Array();
+var buttons = document.getElementsByTagName(&quot;input&quot;);
+for(var i = 0; i &lt; buttons.length; i++)
+{
+if(buttons[i].type == &quot;submit&quot; || buttons[i].type == &quot;button&quot;)
+{
+if(buttons[i].value == &quot;Find Account&quot;)
+{
+clickedButtons.push(buttons[i]);
+}
+}
+}
+
+var disableButtons = function()
+{
+for(var i = 0; i &lt; clickedButtons.length; i++)
+{
+clickedButtons[i].disabled = true;
+clickedButtons[i].className = &quot;btnDisabled&quot;;
+clickedButtons[i].value = &quot;Finding...&quot;;
+}
+};
+var enableButtons = function()
+{
+for(var i = 0; i &lt; clickedButtons.length; i++)
+{
+clickedButtons[i].disabled = false;
+clickedButtons[i].className = &quot;btn&quot;;
+clickedButtons[i].value = &quot;Find Account&quot;;
+}
+};
+
+var updateOpportunity = function(accountId)
+{
+var opportunity = new sforce.SObject(&quot;Opportunity&quot;);
+opportunity.id = &quot;{!Opportunity.Id}&quot;;
+opportunity.AccountId = accountId;
+sforce.connection.update([opportunity]); 
+};
+
+var checkExistedOpportunityContactRole = function(contactId)
+{
+var opportunityId = &quot;{!Opportunity.Id}&quot;;
+var queryString = &quot;select Id from OpportunityContactRole where OpportunityId = &apos;{!Opportunity.Id}&apos; and ContactId = &apos;&quot; + contactId + &quot;&apos; and IsDeleted = false limit 1&quot;;
+var result = sforce.connection.query(queryString);
+var records = result.getArray(&quot;records&quot;);
+if(records.length == 0)
+{
+return null;
+}
+else
+{
+return records[0].Id;
+} 
+};
+
+var upsertOpportunityContactRole = function(contactId)
+{
+var opportunityContactRole = new sforce.SObject(&quot;OpportunityContactRole&quot;);
+opportunityContactRole.OpportunityId = &quot;{!Opportunity.Id}&quot;;
+opportunityContactRole.ContactId = contactId;
+opportunityContactRole.IsPrimary = true;
+var existedRoleId = checkExistedOpportunityContactRole(contactId);
+if(existedRoleId != null)
+{
+opportunityContactRole.id = existedRoleId;
+}
+sforce.connection.upsert(&quot;Id&quot;, [opportunityContactRole]);
+};
+
+var processAjaxCall = function(contactId, accountId)
+{
+try
+{
+updateOpportunity(accountId);
+upsertOpportunityContactRole(contactId);
+alert(&quot;Operation was successful!&quot;);
+window.location = window.location;
+}
+catch(error)
+{
+alert(error);
+enableButtons();
+}
+};
+var createAccount = function()
+{
+var account = new sforce.SObject(&quot;Account&quot;);
+if({!ISBLANK(Opportunity.00NC0000005d0yB)})
+{
+if({!ISBLANK(Opportunity.00NC0000005d0y7)})
+{
+account.Name = &quot;{!Opportunity.00NC0000005d0yR}&quot;;
+}
+else
+{
+account.Name = &quot;{!Opportunity.00NC0000005d0y7}&quot;;
+} 
+}
+else
+{
+account.Name = &quot;{!Opportunity.00NC0000005d0yB}&quot;;
+}
+account.BillingCity = &quot;{!Opportunity.00NC0000005d0y3}&quot;;
+account.BillingCountry = &quot;{!Opportunity.00NC0000005d0y4}&quot;;
+account.BillingPostalCode = &quot;{!Opportunity.00NC0000005d0yA}&quot;;
+account.BillingState = &quot;{!Opportunity.00NC0000005d0y9}&quot;;
+account.BillingStreet = &quot;{!Opportunity.00NC0000005d0y1}&quot;;
+account.ShippingCity = &quot;{!Opportunity.00NC0000005d0yM}&quot;;
+account.ShippingCountry = &quot;{!Opportunity.00NC0000005d0yO}&quot;;
+account.ShippingPostalCode = &quot;{!Opportunity.00NC0000005d0yV}&quot;;
+account.ShippingState = &quot;{!Opportunity.00NC0000005d0yT}&quot;;
+account.ShippingStreet = &quot;{!Opportunity.00NC0000005d0yK}&quot;;
+try
+{
+var result = sforce.connection.create([account]);
+return result;
+}
+catch(error)
+{
+alert(error);
+}
+}
+var createContact = function(accountId)
+{
+var contact = new sforce.SObject(&quot;Contact&quot;);
+contact.AccountId = accountId;
+contact.FirstName = &quot;{!Opportunity.00NC0000005d0y6}&quot;;
+if({!ISBLANK(Opportunity.00NC0000005d0y7)})
+{
+contact.LastName = &quot;{!Opportunity.00NC0000005d0yR}&quot;;
+}
+else
+{
+contact.LastName = &quot;{!Opportunity.00NC0000005d0y7}&quot;;
+}
+contact.Email = &quot;{!Opportunity.00NC0000005d0y5}&quot;;
+try
+{
+var result = sforce.connection.create([contact]);
+return result;
+}
+catch(error)
+{
+alert(error);
+}
+}
+var successQuery = function(result)
+{
+var records = result.getArray(&quot;records&quot;);
+if(records.length == 1)
+{
+var message = &quot;Updating the Account to &apos;&quot; + records[0].Account.Name + &quot;&apos;. Please confirm.&quot;;
+if(confirm(message))
+{
+processAjaxCall(records[0].Id, records[0].AccountId); 
+}
+else
+{
+enableButtons();
+}
+}
+else
+{
+if(records.length == 0)
+{
+if(confirm(&quot;Not find any contacts with the same email as Billing Email! Do you want to automatically create a new Account and Contact based on the current Opportunity?&quot;))
+{
+var createAccountResult = createAccount();
+var createContactResult = createContact(createAccountResult[0].id);
+processAjaxCall(createContactResult[0].id, createAccountResult[0].id); 
+}
+}
+else
+{
+alert(&quot;Multiple Account/Contact exist. Can not proceed!&quot;);
+}
+enableButtons();
+}
+};
+var failureQuery = function(error)
+{
+alert(error);
+enableButtons();
+};
+disableButtons();
+var billingEmail = &quot;{!Opportunity.00NC0000005d0y5}&quot;;
+var queryString = &quot;select Id, AccountId, Account.Name from Contact where AccountId != null and Email = &apos;&quot; + billingEmail + &quot;&apos;&quot;;
+sforce.connection.query(queryString, {onSuccess: successQuery, onFailure: failureQuery});</url>
+    </webLinks>
+</CustomObject>

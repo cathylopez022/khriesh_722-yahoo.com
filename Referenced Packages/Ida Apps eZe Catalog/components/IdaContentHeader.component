@@ -1,0 +1,51 @@
+<apex:component >    
+    <script type="text/javascript">
+        String.prototype.trim = function()
+        {
+             return this.replace(/(^\s*)|(\s*$)/g, "");
+        }
+        
+        function getCookieValue(key)
+        {
+            var arrCookie = document.cookie.split(";");
+            for(var i = 0; i < arrCookie.length; i++)
+            {
+                var arr = arrCookie[i].split("=");
+                if(arr[0].trim() == key)
+                {
+                    if(typeof arr[1] == "undefined")
+                    {
+                        return "";
+                    }
+                    else
+                    {
+                        return arr[1];
+                    }
+                }
+            }
+            return '';
+        }
+         
+        function settleAccount(cartElement)
+        {
+            var orderId = getCookieValue('orderId');
+            if(orderId != null && orderId != '')
+            {
+                window.location.href = cartElement + "?id=" + orderId;
+            }
+            else
+            {
+                window.location.href = cartElement;   
+            }
+            return false;
+        }
+    </script>
+    <div class="cartBox"><a href="#" class="cartAcLink">Hello</a> <apex:outputLink value="{!$Page.eCatalog__IdaPaymentStep1}" styleClass="cartLink" onclick="return settleAccount(this);">My Cart</apex:outputLink> </div>
+    <div class="contentHeader">
+        <div style="float:left"><apex:outputLink value="{!$Page.eCatalog__IdaHome}"><img src="{!URLFOR($Resource.build_HTML,'theme/images/icon_home.gif')}" alt="Home" width="24" height="24" align="absmiddle" /></apex:outputLink> &gt; <a href="#">Store</a></div>
+        <div style="float:right">
+            <a href="#" onclick="window.print();"><img src="{!URLFOR($Resource.build_HTML,'theme/images/icon_printer.gif')}" width="24" height="24" alt="Print" /></a>
+            <!--<a href="#" style="margin-left:20px"><img src="{!URLFOR($Resource.build_HTML,'theme/images/icon_mail.gif')}" width="24" height="24" alt="Email" /></a>-->
+        </div>
+    </div>
+</apex:component>

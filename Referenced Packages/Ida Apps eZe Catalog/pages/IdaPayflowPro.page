@@ -1,0 +1,70 @@
+<apex:page controller="eCatalog.IdaPayflowProController" showHeader="false" cache="false">       
+    <apex:form forceSSL="true" styleClass="validateForm"> 
+        <script type="text/javascript">
+            if({!isSuccess})
+            {
+                window.top.location.href = "{!$Page.eCatalog__IdaPaymentStep3}?id={!orderId}";
+            }
+        </script>              
+        <apex:pageMessages />
+        <table cellspace="0" cellpadding="0">            
+            <tr>
+                <td style="text-align:right;">Card Type <span style="color: red">*</span></td>
+                <td>
+                    <apex:selectList value="{!trnx.CC.CardType}" multiselect="false" size="1" style="width:215px" styleClass="required">
+                        <apex:selectOption itemLabel="Visa" itemValue="Visa"></apex:selectOption>
+                        <apex:selectOption itemLabel="MasterCard" itemValue="MasterCard"></apex:selectOption>
+                    </apex:selectList>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Credit Card Number <span style="color: red">*</span></td>
+                <td>
+                    <apex:inputText value="{!trnx.CC.CardNumber}" style="width:210px" styleClass="required" />
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Security Code <span style="color: red">*</span></td>
+                <td>
+                    <apex:inputText value="{!trnx.CC.SecurityCode}" style="width:210px" styleClass="required" />
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Expiration Date <span style="color: red">*</span></td>
+                <td>
+                    <apex:selectList value="{!trnx.CC.ExpMonth}" size="1" styleClass="required">
+                        <apex:selectOption itemLabel="01" itemValue="01"></apex:selectOption>
+                        <apex:selectOption itemLabel="02" itemValue="02"></apex:selectOption>
+                        <apex:selectOption itemLabel="03" itemValue="03"></apex:selectOption>
+                        <apex:selectOption itemLabel="04" itemValue="04"></apex:selectOption>
+                        <apex:selectOption itemLabel="05" itemValue="05"></apex:selectOption>
+                        <apex:selectOption itemLabel="06" itemValue="06"></apex:selectOption>
+                        <apex:selectOption itemLabel="07" itemValue="07"></apex:selectOption>
+                        <apex:selectOption itemLabel="08" itemValue="08"></apex:selectOption>
+                        <apex:selectOption itemLabel="09" itemValue="09"></apex:selectOption>
+                        <apex:selectOption itemLabel="10" itemValue="10"></apex:selectOption>
+                        <apex:selectOption itemLabel="11" itemValue="11"></apex:selectOption>
+                        <apex:selectOption itemLabel="12" itemValue="12"></apex:selectOption>                        
+                    </apex:selectList>
+                    &nbsp;<b>Month</b>&nbsp;                    
+                    <apex:selectList value="{!trnx.CC.ExpYear}" size="1" styleClass="required">
+                        <apex:selectOptions value="{!expYearOptions}"/>
+                    </apex:selectList>
+                    &nbsp;<b>Year</b>&nbsp;
+                </td>
+            </tr>        
+            <tr>
+                <td style="text-align:right;">Card Holder Name</td>
+                <td>
+                    <apex:inputText value="{!trnx.CC.NameOnCard}" style="width:210px" />
+                </td>
+            </tr>                         
+            <tr>
+                <td></td>
+                <td>
+                    <apex:commandButton value="Submit" action="{!submit}"/>
+                </td>
+            </tr>
+        </table>
+    </apex:form>
+</apex:page>

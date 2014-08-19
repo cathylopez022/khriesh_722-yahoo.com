@@ -1,0 +1,36 @@
+<apex:page controller="screenmagic.PagingController" tabStyle="SM_Home__tab">
+<apex:includeScript value="/soap/ajax/15.0/connection.js"/>
+<apex:includeScript value="/soap/ajax/15.0/apex.js"/>
+<apex:includeScript value="{!$Resource.screenmagic__BulkSMSJS}"/>
+ <apex:sectionHeader title="SMS Magic - {!$User.FirstName} {!$User.LastName}" subtitle="SMS History"/>
+
+  <apex:form >
+    <apex:pageBlock title="SMS history"> 
+    <apex:pageBlockButtons location="top">
+<apex:commandButton value="Dashboard"  onclick="redirectTo('/apex/SMHome','');return false;"/>
+<apex:commandButton value="New SMS"  onclick="redirectTo('/apex/NewSMS','/apex/screenmagic__SMSHistory');return false;"/>
+<apex:commandButton value="New SMS Template"  onclick="redirectTo('/apex/NewSMSTemplate','/apex/screenmagic__SMSHistory');return false;"/>
+<apex:commandButton value="View Templates" onclick="redirectTo('/apex/SMSTemplates','');return false;"/>
+</apex:pageBlockButtons>
+
+      <apex:pageMessages />
+       
+        <apex:pageBlockTable value="{!smsList}" var="sms" >
+            <apex:column value="{!sms.screenmagic__Name__c}" headerValue="Name"/>        
+            <apex:column value="{!sms.screenmagic__PhoneNumber__c}" headerValue="Mobile"/>
+            <apex:column value="{!sms.screenmagic__SMSText__c}" headerValue="Text"/>
+            <apex:column value="{!sms.CreatedDate}" headerValue="CreatedOn"/>
+            
+        </apex:pageBlockTable>
+   
+    </apex:pageBlock> 
+
+    <apex:panelGrid columns="4">
+    <apex:commandLink action="{!first}">First</apex:commandlink>
+    <apex:commandLink action="{!previous}" rendered="{!hasPrevious}">Previous</apex:commandlink>
+    <apex:commandLink action="{!next}" rendered="{!hasNext}">Next</apex:commandlink>
+    <apex:commandLink action="{!last}">Last</apex:commandlink>
+    </apex:panelGrid> 
+
+  </apex:form>
+  </apex:page>

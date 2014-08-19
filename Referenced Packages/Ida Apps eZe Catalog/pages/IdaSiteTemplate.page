@@ -1,0 +1,19 @@
+<apex:page showHeader="false">     
+    <apex:stylesheet value="{!URLFOR($Resource.eCatalog__build_HTML,'theme/styles/global.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.eCatalog__build_HTML,'theme/styles/accordion.css')}"/>     
+    <div class="contentArea">
+        <div class="cartBox">
+            <a href="#" class="cartAcLink"></a> 
+            <a href="{!$Page.IdaPaymentStep1}" class="cartLink">My Cart</a>        
+        </div>
+        <div class="contentHeader">
+            <div style="float:left"><apex:outputLink value="{!$Page.eCatalog__IdaHome}"><img src="{!URLFOR($Resource.build_HTML,'theme/images/icon_home.gif')}" alt="Home" width="24" height="24" align="absmiddle" /></apex:outputLink> &gt; <a href="#">Store</a></div>
+            <div style="float:right">
+                <a href="#" onclick="window.print();"><img src="{!URLFOR($Resource.build_HTML,'theme/images/icon_printer.gif')}" width="24" height="24" alt="Print" /></a>
+                <!--<a href="#" style="margin-left:20px"><img src="{!URLFOR($Resource.build_HTML,'theme/images/icon_mail.gif')}" width="24" height="24" alt="Email" /></a>-->
+            </div>
+        </div>    
+        <apex:insert name="body"/>
+    </div>         
+    <site:googleAnalyticsTracking />
+</apex:page>

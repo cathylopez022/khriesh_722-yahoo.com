@@ -1,0 +1,32 @@
+<apex:page showHeader="false" controller="eCatalog.IdaPaypalController" cache="false"> 
+    <script type="text/javascript">
+        function submitForm()
+        {
+            var topLocation = window.top.location.href;
+            var returnUrl = topLocation.replace(/IdaPaymentStep[\s\S]*/, 'IdaPaymentStep3');
+            returnUrl += '?id={!URLENCODE($CurrentPage.parameters.id)}';
+            var cancelUrl = topLocation.replace(/IdaPaymentStep[\s\S]*/, 'IdaPaymentStep1');
+            cancelUrl += '?id={!URLENCODE($CurrentPage.parameters.id)}';
+            document.getElementById('returnButton').value = returnUrl;
+            document.getElementById('cancelButton').value = cancelUrl;
+            document.getElementById('paypalForm').submit();
+        }
+    </script>
+    <form action="{!payment.ActionUrl}" method="post" target="_top" id="paypalForm">
+        <input type="hidden" name="cmd" value="_xclick" />
+        <input type="hidden" name="business" value="{!payment.MerchantID}" />
+        <input type="hidden" name="lc" value="US" />
+        <input type="hidden" name="item_name" value="Product Items" />
+        <input type="hidden" name="amount" value="{!payment.TotalAmount}" />
+        <input type="hidden" name="currency_code" value="USD" />
+        <input type="hidden" name="button_subtype" value="products" />
+        <input type="hidden" name="no_note" value="1" />
+        <input type="hidden" name="no_shipping" value="1" />
+        <input type="hidden" name="rm" value="2" />
+        <input type="hidden" name="return" value="" id="returnButton" />
+        <input type="hidden" name="cancel_return" value="" id="cancelButton" />
+        <input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHosted" />
+        <input type="hidden" name="custom" value="{!HTMLENCODE($CurrentPage.parameters.id)}*{!payment.TestMode}" />
+        <img src="{!URLFOR($Resource.build_HTML,'theme/images/btn_placeyourorder.gif')}" alt="Place Your Order" title="Place Your Order" style="cursor: pointer" onclick="submitForm()" />                                 
+    </form>
+</apex:page>

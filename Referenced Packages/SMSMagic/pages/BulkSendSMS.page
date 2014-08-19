@@ -1,0 +1,44 @@
+<apex:page controller="screenmagic.BulkSMSController"  tabStyle="SM_Home__tab">
+<apex:includeScript value="/soap/ajax/15.0/connection.js"/>
+<apex:includeScript value="/soap/ajax/15.0/apex.js"/>
+<apex:includeScript value="{!$Resource.screenmagic__BulkSMSJS}"/>
+
+<apex:form >
+
+  
+<apex:pageBlock id="main" title="Compose New SMS for Selected Contacts"  >
+  <apex:pageMessages /><br/>
+  <apex:pageBlockSection columns="2" title="Selected Numbers">    
+ 
+<apex:pageBlockTable value="{!smsObjects}" var="item">
+<apex:column value="{!item.screenmagic__Name__c}"/>
+<apex:column value="{!item.screenmagic__PhoneNumber__c}"/>
+<apex:column value="{!item.screenmagic__ObjectType__c}"/>
+
+
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+  <apex:pageBlockSection title="Use Templates" >
+<apex:selectList value="{!template}" size="1" title="Choose a template" >
+    <apex:actionSupport event="onchange" rerender="textSection" action="{!changeTemplateText}" />
+    <apex:selectOptions value="{!items}"/>
+</apex:selectList>
+</apex:pageBlockSection> 
+<apex:pageBlockSection id="textSection" columns="2" title="SMS Text">   
+
+ <apex:inputTextArea id="SMSText"  style="width:400px;height:80px;" value="{!smsText}"/>
+
+</apex:pageBlockSection>
+
+
+
+
+<apex:pageBlockButtons >
+  
+<apex:commandButton action="{!send}" value="send" />
+<apex:commandButton action="{!cancel}" value="cancel" />
+</apex:pageBlockButtons>
+</apex:pageBlock>
+
+</apex:form>
+</apex:page>

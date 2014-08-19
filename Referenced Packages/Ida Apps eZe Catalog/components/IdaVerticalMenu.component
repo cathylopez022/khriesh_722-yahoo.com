@@ -1,0 +1,13 @@
+<apex:component controller="eCatalog.IdaMenuController">    
+    <div class="arrowlistmenu">
+        <apex:repeat value="{!verticalMenu.menuItems}" var="menu">
+            <h3 class="menuheader expandable">{!menu.Name}</h3>
+            <ul class="categoryitems">
+                <apex:repeat value="{!menu.subMenus}" var="item">
+                    <li><apex:outputLink value="{!IF(AND(item.Link <> null, item.Link <> ''), item.Link, $Page.eCatalog__IdaHome&'?menuItem='&URLENCODE(item.Name))}" title="{!item.ToolTip}">{!item.Name}</apex:outputLink></li>
+                </apex:repeat>
+            </ul>
+        </apex:repeat>
+    </div>
+    <!--<div class="extraLinks"> <a href="#">Training</a> <a href="#">Services</a></div>-->            
+</apex:component>

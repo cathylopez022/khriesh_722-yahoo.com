@@ -1,0 +1,9 @@
+<apex:page standardcontroller="Account" >
+  <!-- Begin Default Content REMOVE THIS -->
+  <h1>Congratulations</h1>
+  This is your new Page: MyTestPage
+  <apex:form >
+  <c:RichEditor value="{!account.Description}"/>
+  </apex:form>
+  <!-- End Default Content REMOVE THIS -->
+</apex:page>

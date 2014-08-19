@@ -1,0 +1,36 @@
+<apex:page controller="eCatalog.IdaNotificationController" showHeader="false" cache="false">
+    <apex:composition template="eCatalog__IdaSiteTemplate">
+        <apex:define name="body">
+            <div class="contentBox">    
+                <div class="leftPanel"></div>
+                <div class="mainPanel">
+                    <div style="padding:30px 20px 30px 120px"> 
+                        <apex:outputPanel rendered="{!isCompleted}">
+                            <p>
+                                <strong>Thank you for your order.<br /> 
+                                We will send the confirmation e-mail to: <a href="#">{!Email}</a></strong>
+                            </p>
+                        </apex:outputPanel>
+                            
+                        <apex:outputPanel rendered="{!isInProgress}">
+                            <p>
+                                <strong>Thank you for your order, your order is in progress.<br /> 
+                                We will send the confirmation e-mail to: <a href="#">{!Email}</a></strong>
+                            </p>
+                        </apex:outputPanel>
+                            
+                        <apex:outputPanel rendered="{!isFailed}">
+                            <strong>
+                                <p class="error"> Oops, something went wrong!<br /> 
+                                Please check your information, credit card number, and re-submit your order.
+                                E-mail us at <a href="#">info@flower.com</a> or call us at xxx-xxx-xxxx</p>
+                            </strong>
+                        </apex:outputPanel>
+                    </div>                        
+                </div>     
+                <div class="clearfloat"></div>
+            </div>
+            <div class="footerBar"><apex:image value="{!URLFOR($Resource.eCatalog__build_HTML,'theme/images/footer_bar.gif')}" width="960" height="30" alt=""/></div>        
+        </apex:define>
+    </apex:composition>
+</apex:page>

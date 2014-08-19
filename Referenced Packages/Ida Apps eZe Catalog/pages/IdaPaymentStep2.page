@@ -1,0 +1,171 @@
+<apex:page controller="eCatalog.IdaPaymentController" showHeader="false" cache="false" action="{!checkStep}">
+    <apex:includeScript value="{!URLFOR($Resource.eCatalog__IDA_jQuery, 'jQuery/jquery-1.5.2.min.js')}" />  
+    <script type="text/javascript">               
+        $(document).ready(function(){                                                               
+            $(":radio[name='methodRadio']:first").attr("checked", true);   
+            $(":radio[name='methodRadio']").click(function(){
+                var index = $(":radio[name='methodRadio']").index($(":radio[name='methodRadio']:checked"));
+                $(".methodMsg").hide();                
+                $(".methodMsg").eq(index).show();
+                $(".methodFrame").hide();
+                $(".methodFrame").eq(index).show();
+            });                                                                                                                                                               
+        });
+    </script> 
+
+    <apex:composition template="eCatalog__IdaSiteTemplate">
+        <apex:define name="body">
+            <div class="contentBox">
+                <div class="leftPanel"></div>
+                <apex:outputPanel styleClass="mainPanel" style="margin-top: 20px; text-align: center; color: red;" layout="block" rendered="{!ISNULL(shoppingCart)}">
+                    WARNING: You must add at least one product into shopping cart to place your order! 
+                </apex:outputPanel>                            
+                <apex:outputPanel styleClass="mainPanel" layout="block" rendered="{!NOT(ISNULL(shoppingCart))}"> 
+                    <div style="float:right; width:300px">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="order_details">                                                       
+                            <apex:repeat value="{!shoppingCart.ShoppingItems}" var="item">
+                                <tr>
+                                    <td valign="top" style="border-top:1px solid #C7C7C7">
+                                        <img src="{!item.ProductImage}" alt="" width="83" height="83" /><br /><br />
+                                        <strong>
+                                            {!item.ProductName}
+                                            <apex:outputText value=", {!item.Mix.Value1}" rendered="{!NOT(ISNULL(item.Mix.Value1))}"></apex:outputText>
+                                            <apex:outputText value=", {!item.Mix.Value2}" rendered="{!NOT(ISNULL(item.Mix.Value2))}"></apex:outputText>
+                                            <apex:outputText value=", {!item.Mix.Value3}" rendered="{!NOT(ISNULL(item.Mix.Value3))}"></apex:outputText>
+                                        </strong><br />
+                                        {!item.Catalog.ShortText}                                        
+                                    </td>
+                                    <td valign="top" style="border-top:1px solid #C7C7C7; width: 68px">
+                                        <strong>Delivered to:</strong><br /> 
+                                        {!orderCustom.Ida_Shipping_First_Name__c} {!orderCustom.Ida_Shipping_Last_Name__c}<br /> 
+                                        {!orderCustom.Ida_Shipping_Address_Line1__c}<br /> 
+                                        {!orderCustom.Ida_Shipping_Address_Line2__c}<br />
+                                        {!orderCustom.Ida_Shipping_City__c} {!orderCustom.Ida_Shipping_State__c},<br /> 
+                                        {!orderCustom.Ida_Shipping_ZipCode__c}<br /> 
+                                        {!orderCustom.Ida_Shipping_Country__c}<br /> 
+                                        {!orderCustom.Ida_Shipping_Phone__c}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right" valign="top" style="border-top:1px solid #C7C7C7">Unit Price:</td>
+                                    <td valign="bottom" style="border-top:1px solid #C7C7C7">
+                                        {!shoppingCart.CurrencyCode}
+                                        <apex:outputText value="{0,number,#,###,##0.00}">    
+                                            <apex:param value="{!item.UnitPrice}"/>
+                                        </apex:outputText>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right" valign="top">Quantity:</td>
+                                    <td valign="top">{!item.Quantity}</td>
+                                </tr>                            
+                            </apex:repeat>
+                            
+                            <tr> 
+                                <th align="right" style="border-top:1px solid #C7C7C7">Subtotal: </th>                                 
+                                <th align="left" style="border-top:1px solid #C7C7C7">
+                                    {!shoppingCart.CurrencyCode}
+                                    <apex:outputText value="{0,number,#,###,###.00}">    
+                                        <apex:param value="{!shoppingCart.SubTotal}" />
+                                    </apex:outputText>                                
+                                </th> 
+                            </tr> 
+                            <tr> 
+                                <th align="right" style="border-top:1px solid #C7C7C7">Shipping Cost: </th>                                 
+                                <th align="left" style="border-top:1px solid #C7C7C7">
+                                    {!shoppingCart.CurrencyCode}
+                                    <apex:outputText value="{0,number,#,###,###.00}">    
+                                        <apex:param value="{!shoppingCart.ShippingCost}" />
+                                    </apex:outputText>                                
+                                </th> 
+                            </tr>       
+                            <tr>
+                                <th align="right" style="border-top:1px solid #C7C7C7; color: red;">Coupon: </th>                                 
+                                <th align="left" style="border-top:1px solid #C7C7C7; color: red;">
+                                    {!shoppingCart.CurrencyCode}
+                                    <apex:outputText value="{0,number,#,###,###.00}">    
+                                        <apex:param value="{!shoppingCart.Coupon}" />
+                                    </apex:outputText>                                
+                                </th> 
+                            </tr>                                                    
+                            <tr> 
+                                <th align="right" style="border-top:1px solid #C7C7C7">Tax: </th>                                 
+                                <th align="left" style="border-top:1px solid #C7C7C7">
+                                    {!shoppingCart.CurrencyCode}
+                                    <apex:outputText value="{0,number,#,###,###.00}">    
+                                        <apex:param value="{!shoppingCart.Tax}" />
+                                    </apex:outputText>                                
+                                </th> 
+                            </tr>                                                           
+                            <tr> 
+                                <th align="right" style="border-top:1px solid #C7C7C7">Your Order Total: </th>                                 
+                                <th align="left" style="border-top:1px solid #C7C7C7">
+                                    {!shoppingCart.CurrencyCode}
+                                    <apex:outputText value="{0,number,#,###,###.00}">    
+                                        <apex:param value="{!shoppingCart.TotalAmount}" />
+                                    </apex:outputText>                                
+                                </th> 
+                            </tr>                                                      
+                        </table>
+                    </div>
+                    
+                    <div style="float: left; width: 400px">  
+                        <apex:form >
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="generic_table">
+                                <tr><th>Coupon Code</th></tr>
+                                <tr>
+                                    <td>
+                                        <strong>Coupon Code:</strong>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <apex:inputText value="{!couponCode}" />&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <apex:commandButton value="Apply" action="{!applyCoupon}"/>                            
+                                    </td>  
+                                </tr>
+                                <tr><td><apex:messages style="color: red;" /></td></tr>
+                            </table>
+                        </apex:form>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="generic_table">
+                            <tr><th>Payment</th></tr>
+                            <tr style="display:{!IF(paymentMethods.size == 0, '', 'none')}">
+                                <td>
+                                    <p style="color: red">
+                                        <strong>
+                                            You have not installed a payment adapter, please contact Ida Apps for additional information.
+                                        </strong>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <apex:repeat value="{!paymentMethods}" var="item">                                
+                                        <input type="radio" name="methodRadio" value="{!item.Name}" />                                            
+                                        <img src="{!URLFOR($Resource.PaymentLogos, 'PaymentLogos/' + item.Logo + '.gif')}" alt="{!item.Name}" width="100" height="40" align="absmiddle" />
+                                    </apex:repeat>                            
+                                </td>
+                            </tr>                            
+                                                        
+                            <apex:variable value="{!0}" var="i" />
+                            <apex:repeat value="{!paymentMethods}" var="item">
+                                <tr style="display: {!IF(i=0, 'block', 'none')}" class="methodMsg">
+                                    <td width="400px"><b>{!item.Message}</b></td>
+                                </tr>
+                                <apex:variable value="{!i+1}" var="i" />
+                            </apex:repeat>
+                        
+                            <apex:variable value="{!0}" var="i" />
+                            <apex:repeat value="{!paymentMethods}" var="item">
+                                <tr style="display: {!IF(i=0, 'block', 'none')}" class="methodFrame">                                   
+                                    <td align="right" valign="top" width="400px">
+                                        <iframe src="{!item.Src}" width="400px" height="600px" frameborder="0" scrolling="no" />
+                                    </td>
+                                </tr>
+                                <apex:variable value="{!i+1}" var="i" />
+                            </apex:repeat>                                          
+                        </table>                                                                                   
+                    </div>                                  
+                </apex:outputPanel>                
+                <div class="clearfloat"></div>
+            </div>
+            <div class="footerBar"><apex:image value="{!URLFOR($Resource.eCatalog__build_HTML,'theme/images/footer_bar.gif')}" width="960" height="30" alt=""/></div>                 
+        </apex:define>
+    </apex:composition>        
+</apex:page>

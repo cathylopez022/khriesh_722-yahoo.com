@@ -1,0 +1,24 @@
+<apex:component controller="eCatalog.IdaBannerController">
+    <apex:attribute name="bannerType" assignTo="{!bannerType}" type="String" description="The type of this banner" />        
+    <div style="margin:0 auto;text-align:center;">
+        <apex:outputPanel rendered="{!MenuImage != null}" style="margin-bottom:10px;"><apex:image value="{!MenuImage}" /></apex:outputPanel>
+    </div>
+    <h1 class="cTitle">{!HTMLENCODE($CurrentPage.parameters.menuItem)}</h1>
+    <div class="clearfloat"></div>                                        
+    <apex:repeat value="{!products}" var="item">
+        <div class="productBox">
+            <apex:outputLink value="{!$Page.eCatalog__IdaProductDetail}?id={!item.Id}">
+                <div><apex:image value="{!item.ImageThumbnail}" width="218" height="179" alt="{!item.Name}" title="{!item.Name}" /></div>
+            </apex:outputLink>
+            <div class="desc"><strong>{!item.Name}</strong><br /></div>
+            <div class="rate">
+                {!item.CurrencyCode}
+                <apex:outputText value="{0, number, #,###,###.00}">
+                    <apex:param value="{!item.UnitPrice}"/>
+                </apex:outputText>
+            </div>
+            <div class="clearfloat"></div>
+        </div>
+    </apex:repeat>
+    <div class="clearfloat"></div>        
+</apex:component>

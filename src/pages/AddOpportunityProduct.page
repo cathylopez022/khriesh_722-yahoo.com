@@ -1,0 +1,5 @@
+<apex:page showHeader="false" sidebar="false" standardController="OpportunityLineItem" extensions="OpportunityProductExtension">
+<apex:form >
+	<apex:commandButton value="Add Product" action="{!doInsert}" />
+</apex:form>
+</apex:page>

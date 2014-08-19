@@ -1,0 +1,50 @@
+<apex:component >
+    <apex:attribute name="myValue" description="Default value for the component." type="Integer" required="true"/>    
+    <apex:attribute name="Max" description="Maximum value" type="Integer" required="true"/>
+    <apex:attribute name="Min" description="Minimum value" type="Integer" required="true"/> 
+    
+    <script>
+        function increment(valueId)
+        {
+            if (document.getElementById(valueId).value < {!max})
+                {
+                    document.getElementById(valueId).value++;
+                }
+            else
+                {
+                    alert("You can't increase the number above " + {!max});
+                }                
+        }
+        
+        function decrement(valueId)
+        {
+            if (document.getElementById(valueId).value > {!min})
+                {
+                    document.getElementById(valueId).value--;
+                }
+            else
+                {
+                    alert("You can't decrease the number above " + {!min});
+                }                
+        }
+        
+    </script>
+    
+    <table cellspacing='0' cellpadding='0'>
+        <tr>
+            <td rowspan="2">
+                <apex:inputText value="{!myvalue}" size="4" id="theValue"/>
+            </td>
+            <td>
+                <div onclick="increment('{!$Component.theValue}');">&#9650;</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <div onclick="decrement('{!$Component.theValue}');">&#9660;</div>
+            </td>
+        </tr>
+</table>
+    
+</apex:component>

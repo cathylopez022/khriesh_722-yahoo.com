@@ -1,0 +1,58 @@
+<apex:page showHeader="false" controller="eCatalog.IdaBuyNowPayLaterController" id="bulkOrderPage">
+    <script type="text/javascript">
+        function isEmail(email)
+        {
+            var reg = /\w+([-\+\.]\w*)*@\w+([-\.]\w*)*\.\w+([-\.]\w*)*/;
+            return reg.test(email);
+        }
+
+        function validateEmail()
+        {
+            var emailAddress = document.getElementById('{!$Component.bulkOrderPage.bulkOrderForm.email}');
+            if(emailAddress.value == null || emailAddress.value == '')
+            {
+                emailAddress.style.border = '1px solid #CC0000';
+                return false;
+            }
+            else
+            {                
+                if(!isEmail(emailAddress.value))
+                {
+                    alert("Error: Invalid Email Address.");
+                    emailAddress.style.border = '1px solid #CC0000';
+                    return false;
+                }                
+            }
+            return true;
+        } 
+        function placeYourOrder()
+        {
+            if(validateEmail())
+            {
+                placeBulkOrder();
+            }
+        } 
+        
+        function aftercheckout()
+        {
+                if("{!IsCheckoutSuccess}".toLowerCase() == "true")
+                {
+                    parent.location.href= '{!$Page.eCatalog__IdaPaymentStep3}?id={!$CurrentPage.parameters.id}';
+                }
+        }      
+    </script>
+    <apex:pageMessages ></apex:pageMessages>
+    <div>
+        <apex:form id="bulkOrderForm">
+            <apex:actionFunction name="placeBulkOrder" action="{!placeOrder}"/>
+            <div style="margin-bottom:10px;margin-right:5px;">
+                E-mail<span style="color:#CC0000;font-size:12px;font-weight:bold; padding: 0px 2px;">*</span>
+                <apex:inputText value="{!Email}" style="width: 160px" id="email" />
+            </div>
+            <img src="{!URLFOR($Resource.build_HTML,'theme/images/btn_placeyourorder.gif')}" onclick="placeYourOrder();" alt="Place Your Order" title="Place Your Order" style="cursor: pointer" />
+        </apex:form>        
+    </div>
+    <script type="text/javascript">
+            aftercheckout();
+    </script>
+</apex:page>

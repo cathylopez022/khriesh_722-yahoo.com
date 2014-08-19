@@ -1,0 +1,26 @@
+<apex:page controller="showTable" >
+    <apex:form >
+    <apex:pageBlock >
+        <apex:pageBlockTable value="{!opps}" var="o">
+            <apex:column >
+                <apex:outputField value="{!o.Name}"/>
+                <!--<apex:commandButton value="Show Account" reRender="sub"> -->
+                <apex:actionSupport event="onmouseover" reRender="sub">
+                    <apex:param name="oppId" assignTo="{!oppId}" value="{!o.Id}"/>
+                </apex:actionSupport>   
+                <!--</apex:commandButton>-->
+            </apex:column>
+            
+            <apex:column >
+                <apex:outputPanel id="sub">
+                    <apex:outputField value="{!o.Account.Name}" rendered="{!IF(oppId = o.Id  ,true,false)}"/>
+                </apex:outputPanel>
+                
+                <apex:outputPanel id="sub1">
+                    <apex:outputField value="" rendered="{!IF(oppId = o.Id  ,true,false)}"/>
+                </apex:outputPanel>
+            </apex:column>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

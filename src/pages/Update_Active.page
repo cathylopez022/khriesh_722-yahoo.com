@@ -1,0 +1,28 @@
+<apex:page controller="MyController">
+    <apex:messages />
+
+    <apex:pageBlock title="Users">
+        <apex:form >
+        
+        <!--<apex:dataTable value="{!Users}" var="usr">
+        
+            <apex:column >
+            <apex:facet name="header">Name</apex:facet>
+                <apex:commandLink > {!usr.Name}
+                <apex:param name="uid" value="{!usr.id}"/>
+                </apex:commandLink>
+            </apex:column>
+        
+        </apex:dataTable>
+        
+        <p/> -->
+        
+        <apex:outputText >{!user.FirstName}&nbsp;{!user.LastName}</apex:outputText>  
+        <p />
+        Change IsActive value: <p/>
+        <apex:inputcheckbox value="{!user.IsActive}"/> <p/>
+        <apex:commandButton action="{!save}" value="Update IsActive"/>
+        </apex:form>
+    </apex:pageBlock>
+
+</apex:page>

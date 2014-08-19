@@ -1,0 +1,7 @@
+<apex:page >
+  <apex:pageBlock title="Increase or Decrease the Number Displayed">
+      <apex:form >
+          <c:addSubValue myValue="10" min="0" max="15"></c:addSubValue> 
+      </apex:form>
+  </apex:pageBlock>
+</apex:page>

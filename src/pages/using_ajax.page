@@ -1,0 +1,29 @@
+<!--
+  Force.com Cookbook Sample Code
+  Chapter 13: Getting Started with Visualforce
+  "Using AJAX in a Visualforce Page"
+
+  Sample code provided by salesforce.com. All rights reserved.
+-->
+
+<apex:page controller="contactController" showHeader="true" tabStyle="Contact">
+    <apex:form >
+        <apex:dataTable value="{!contacts}" var="c" cellpadding="4" border="1">
+            <apex:column >
+                <apex:facet name="header"><b>Name</b></apex:facet>
+                <apex:commandLink reRender="detail">{!c.name}
+                    <apex:param name="id" value="{!c.id}"/>
+                </apex:commandLink>
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header"><b>Account Name</b></apex:facet>
+                {!c.account.name}
+            </apex:column>
+        </apex:dataTable>
+        
+    </apex:form>
+    <apex:outputPanel id="detail">
+            <apex:detail subject="{!contact}" title="false" relatedList="false"/>
+            <apex:relatedList list="ActivityHistories" subject="{!contact}"/>
+        </apex:outputPanel>
+</apex:page>
