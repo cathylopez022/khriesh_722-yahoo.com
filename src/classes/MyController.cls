@@ -5,6 +5,7 @@ String strErrMsg;
  
 public PageReference save() {
 
+	strErrMsg = '';
     Database.update(usr);
     
     
