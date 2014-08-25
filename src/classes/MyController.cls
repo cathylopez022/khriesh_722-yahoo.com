@@ -2,7 +2,7 @@ public class MyController {
 User usr;
 
 String strErrMsg;
-
+ 
 public PageReference save() {
 
     Database.update(usr);
