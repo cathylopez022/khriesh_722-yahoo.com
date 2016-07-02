@@ -7,7 +7,7 @@ public without sharing class ContactApprovalHandler
             Map<Id, String> mapContactIdCommentValidationResult = new Map<Id, String>();
             List<ProcessInstance> processes = new List<ProcessInstance>();
             for(Contact contact:contacts)
-            {
+            { 
                   setContactIds.add(contact.Id); 
             }   
             if(setContactIds.size()>0)
