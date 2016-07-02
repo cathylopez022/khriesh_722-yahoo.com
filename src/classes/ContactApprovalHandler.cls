@@ -8,7 +8,7 @@ public without sharing class ContactApprovalHandler
             List<ProcessInstance> processes = new List<ProcessInstance>();
             for(Contact contact:contacts)
             {
-                  setContactIds.add(contact.Id);
+                  setContactIds.add(contact.Id); 
             }   
             if(setContactIds.size()>0)
             {         
