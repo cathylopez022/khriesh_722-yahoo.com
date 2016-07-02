@@ -2,10 +2,10 @@ public class MyController {
 User usr;
 
 String strErrMsg;
-String strTest;
-
+ 
 public PageReference save() {
 
+	strErrMsg = '';
     Database.update(usr);
     
     
